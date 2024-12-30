@@ -17,6 +17,7 @@ demonstrates:
 """
 
 import sys
+import os
 
 from mininet.net import Mininet
 from mininet.cli import CLI
@@ -25,6 +26,8 @@ from mininet.node import Node
 from mininet.topolib import TreeTopo
 from mininet.util import waitListening
 
+curr_file_path = os.path.dirname(os.path.realpath(__file__))
+curr_dir = os.path.dirname(curr_file_path)
 
 def TreeNet( depth=1, fanout=2, **kwargs ):
     "Convenience function for creating tree networks."
@@ -65,9 +68,15 @@ def sshd( network, cmd='/usr/sbin/sshd', opts='-D',
     for server in network.hosts:
         waitListening( server=server, port=22, timeout=5 )
 
+    config_file = curr_dir + "/network_config.txt"
     info( "\n*** Hosts are running sshd at the following addresses:\n" )
     for host in network.hosts:
         info( host.name, host.IP(), '\n' )
+        
+    with open(config_file, "w") as f:
+        for host in network.hosts:
+            f.write(f"hoatname = {host.name} | ip = {host.IP()}\n")
+    
     info( "\n*** Type 'exit' or control-D to shut down network\n" )
     CLI( network )
     for host in network.hosts:

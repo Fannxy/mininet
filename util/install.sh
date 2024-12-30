@@ -37,10 +37,10 @@ test -e /etc/debian_version && DIST="Debian"
 grep Ubuntu /etc/lsb-release &> /dev/null && DIST="Ubuntu"
 if [ "$DIST" = "Ubuntu" ] || [ "$DIST" = "Debian" ]; then
     # Truly non-interactive apt-get installation
-    install='sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q install'
-    remove='sudo DEBIAN_FRONTEND=noninteractive apt-get -y -q remove'
-    pkginst='sudo dpkg -i'
-    update='sudo apt-get'
+    install='apt-get -y -q install'
+    remove='apt-get -y -q remove'
+    pkginst='dpkg -i'
+    update='apt-get'
     # Prereqs for this script
     if ! which lsb_release &> /dev/null; then
         $install lsb-release
@@ -49,10 +49,10 @@ fi
 test -e /etc/fedora-release && DIST="Fedora"
 test -e /etc/redhat-release && DIST="RedHatEnterpriseServer"
 if [ "$DIST" = "Fedora" -o "$DIST" = "RedHatEnterpriseServer" ]; then
-    install='sudo yum -y install'
-    remove='sudo yum -y erase'
-    pkginst='sudo rpm -ivh'
-    update='sudo yum'
+    install='yum -y install'
+    remove='yum -y erase'
+    pkginst='rpm -ivh'
+    update='yum'
     # Prereqs for this script
     if ! which lsb_release &> /dev/null; then
         $install redhat-lsb-core
@@ -60,9 +60,9 @@ if [ "$DIST" = "Fedora" -o "$DIST" = "RedHatEnterpriseServer" ]; then
 fi
 test -e /etc/SuSE-release && DIST="SUSE Linux"
 if [ "$DIST" = "SUSE Linux" ]; then
-    install='sudo zypper --non-interactive install '
-    remove='sudo zypper --non-interactive  remove '
-    pkginst='sudo rpm -ivh'
+    install='zypper --non-interactive install '
+    remove='zypper --non-interactive  remove '
+    pkginst='rpm -ivh'
     # Prereqs for this script
     if ! which lsb_release &> /dev/null; then
 		$install openSUSE-release
@@ -200,7 +200,7 @@ function mn_deps {
             else
                 wget https://bootstrap.pypa.io/get-pip.py
             fi
-            sudo ${PYTHON} get-pip.py
+            ${PYTHON} get-pip.py
             rm get-pip.py
         fi
        ${python} -m pip install pexpect
@@ -211,7 +211,7 @@ function mn_deps {
 
     echo "Installing Mininet core"
     pushd $MININET_DIR/mininet
-    sudo PYTHON=${PYTHON} make install
+    PYTHON=${PYTHON} make install
     popd
 }
 
@@ -222,7 +222,7 @@ function mn_doc {
     if ! $install doxygen-latex; then
         echo "doxygen-latex not needed"
     fi
-    sudo pip2 install doxypy
+    pip2 install doxypy
 }
 
 # The following will cause a full OF install, covering:
@@ -252,7 +252,7 @@ function of {
     ./boot.sh
     ./configure
     make
-    sudo make install
+    make install
     cd $BUILD_DIR
 }
 
@@ -285,16 +285,16 @@ function of13 {
     make
 
     cd $BUILD_DIR
-    sudo cp netbee/bin/libn*.so /usr/local/lib
-    sudo ldconfig
-    sudo cp -R netbee/include/ /usr/
+    cp netbee/bin/libn*.so /usr/local/lib
+    ldconfig
+    cp -R netbee/include/ /usr/
 
     # Resume the install:
     cd $BUILD_DIR/ofsoftswitch13
     ./boot.sh
     ./configure
     make
-    sudo make install
+    make install
     cd $BUILD_DIR
 }
 
@@ -334,7 +334,7 @@ function install_wireshark {
     WSDIR=`find /usr/lib -type d -name 'libwireshark*' | head -1`
     WSPLUGDIR=$WSDIR/plugins/
     PLUGIN=loxi_output/wireshark/openflow.lua
-    sudo cp $PLUGIN $WSPLUGDIR
+    cp $PLUGIN $WSPLUGDIR
     echo "Copied openflow plugin $PLUGIN to $WSPLUGDIR"
 
     cd $BUILD_DIR
@@ -402,15 +402,15 @@ function ubuntuOvs {
     fi
 
     /sbin/modinfo openvswitch
-    sudo ovs-vsctl show
+    ovs-vsctl show
     # Switch can run on its own, but
     # Mininet should control the controller
     # This appears to only be an issue on Ubuntu/Debian
-    if sudo service openvswitch-controller stop 2>/dev/null; then
+    if service openvswitch-controller stop 2>/dev/null; then
         echo "Stopped running controller"
     fi
     if [ -e /etc/init.d/openvswitch-controller ]; then
-        sudo update-rc.d openvswitch-controller disable
+        update-rc.d openvswitch-controller disable
     fi
 }
 
@@ -457,18 +457,18 @@ function ovs {
         # Switch can run on its own, but
         # Mininet should control the controller
         # This appears to only be an issue on Ubuntu/Debian
-        if sudo service $OVSC stop 2>/dev/null; then
+        if service $OVSC stop 2>/dev/null; then
             echo "Stopped running controller"
         fi
         if [ -e /etc/init.d/$OVSC ]; then
-            sudo update-rc.d $OVSC disable
+            update-rc.d $OVSC disable
         fi
     fi
     # This service seems to hang on 20.04
     if systemctl list-units | \
             grep status netplan-ovs-cleanup.service>&/dev/null; then
-        echo 'TimeoutSec=10' | sudo EDITOR='tee -a' \
-        sudo systemctl edit --full netplan-ovs-cleanup.service
+        echo 'TimeoutSec=10' | EDITOR='tee -a' \
+        systemctl edit --full netplan-ovs-cleanup.service
     fi
 }
 
@@ -485,9 +485,9 @@ function remove_ovs {
         for s in $scripts; do
             s=$(basename $s)
             echo SCRIPT $s
-            sudo service $s stop
-            sudo rm -f /etc/init.d/$s
-            sudo update-rc.d -f $s remove
+            service $s stop
+            rm -f /etc/init.d/$s
+            update-rc.d -f $s remove
         done
     fi
     echo "Done removing OVS"
@@ -513,7 +513,7 @@ function ivs {
     cd $IVS_SRC
     git submodule update --init
     make
-    sudo make install
+    make install
 }
 
 # Install RYU
@@ -533,12 +533,12 @@ function ryu {
     cd ryu
 
     # install ryu
-    sudo pip install -r tools/pip-requires -r tools/optional-requires \
+    pip install -r tools/pip-requires -r tools/optional-requires \
         -r tools/test-requires
-    sudo python setup.py install
+    python setup.py install
 
     # Add symbolic link to /usr/bin
-    sudo ln -s ./bin/ryu-manager /usr/local/bin/ryu-manager
+    ln -s ./bin/ryu-manager /usr/local/bin/ryu-manager
 }
 
 # Install NOX with tutorial files
@@ -636,7 +636,7 @@ function oftest {
 
     # Install deps:
     $install tcpdump
-    $install ${PYPKG}-scapy || sudo $PYTHON -m pip install scapy
+    $install ${PYPKG}-scapy || $PYTHON -m pip install scapy
 
     # Install oftest:
     cd $BUILD_DIR/
@@ -664,7 +664,7 @@ function cbench {
     ./configure --with-openflow-src-dir=$BUILD_DIR/openflow
     make liboflops_test.la
     make
-    sudo make install || true # make install fails; force past this
+    make install || true # make install fails; force past this
 }
 
 function vm_other {
@@ -682,7 +682,7 @@ function vm_other {
     #else
     #    BLACKLIST=/etc/modprobe.d/blacklist
     #fi
-    #sudo sh -c "echo 'blacklist net-pf-10\nblacklist ipv6' >> $BLACKLIST"
+    # sh -c "echo 'blacklist net-pf-10\nblacklist ipv6' >> $BLACKLIST"
     echo "Disabling IPv6"
     # Disable IPv6
     if ! grep 'disable_ipv6' /etc/sysctl.conf; then
@@ -691,26 +691,26 @@ function vm_other {
 # Mininet: disable IPv6
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1' | sudo tee -a /etc/sysctl.conf > /dev/null
+net.ipv6.conf.lo.disable_ipv6 = 1' | tee -a /etc/sysctl.conf > /dev/null
     fi
     # Since the above doesn't disable neighbor discovery, also do this:
     # disable via boot line, and also restore eth0 naming for VM use
     if ! grep 'ipv6.disable' /etc/default/grub; then
-        sudo sed -i -e \
+        sed -i -e \
         's/GRUB_CMDLINE_LINUX_DEFAULT="/GRUB_CMDLINE_LINUX_DEFAULT="ipv6.disable=1 net.ifnames=0 /' \
         /etc/default/grub
-        sudo update-grub
+        update-grub
     fi
     # Disabling IPv6 breaks X11 forwarding via ssh
     line='AddressFamily inet'
     file='/etc/ssh/sshd_config'
     echo "Adding $line to $file"
     if ! grep "$line" $file > /dev/null; then
-        echo "$line" | sudo tee -a $file > /dev/null
+        echo "$line" | tee -a $file > /dev/null
     fi
 
-    # Enable command auto completion using sudo; modify ~/.bashrc:
-    sed -i -e 's|# for examples$|&\ncomplete -cf sudo|' ~/.bashrc
+    # Enable command auto completion using ; modify ~/.bashrc:
+    sed -i -e 's|# for examples$|&\ncomplete -cf |' ~/.bashrc
 
     # Install tcpdump, cmd-line packet dump tool.  Also install gitk,
     # a graphical git history viewer.
@@ -736,7 +736,7 @@ net.ipv6.conf.lo.disable_ipv6 = 1' | sudo tee -a /etc/sysctl.conf > /dev/null
 
     # Reduce boot screen opt-out delay. Modify timeout in /boot/grub/menu.lst to 1:
     if [ "$DIST" = "Debian" ]; then
-        sudo sed -i -e 's/^timeout.*$/timeout         1/' /boot/grub/menu.lst
+        sed -i -e 's/^timeout.*$/timeout         1/' /boot/grub/menu.lst
     fi
 
     # Clean unneeded debs:
@@ -756,8 +756,8 @@ function modprobe {
     if [ -z "$OVS_KMODS" ]; then
       echo "OVS_KMODS not set. Aborting."
     else
-      sudo cp $OVS_KMODS $DRIVERS_DIR
-      sudo depmod -a ${KERNEL_NAME}
+       cp $OVS_KMODS $DRIVERS_DIR
+       depmod -a ${KERNEL_NAME}
     fi
     set -o nounset
 }
@@ -793,34 +793,34 @@ function all {
 # Restore disk space and remove sensitive files before shipping a VM.
 function vm_clean {
     echo "Cleaning VM..."
-    sudo apt-get clean
-    sudo apt-get autoremove
-    sudo rm -rf /tmp/*
-    sudo rm -rf openvswitch*.tar.gz
+    apt-get clean
+    apt-get autoremove
+    rm -rf /tmp/*
+    rm -rf openvswitch*.tar.gz
 
     # Remove sensitive files
     history -c  # note this won't work if you have multiple bash sessions
     rm -f ~/.bash_history  # need to clear in memory and remove on disk
     rm -f ~/.ssh/id_rsa* ~/.ssh/known_hosts
-    sudo rm -f ~/.ssh/authorized_keys*
+     rm -f ~/.ssh/authorized_keys*
 
     # Remove SSH keys and regenerate on boot
     echo 'Removing SSH keys from /etc/ssh/'
-    sudo rm -f /etc/ssh/*key*
+    rm -f /etc/ssh/*key*
     if [ ! -e /etc/rc.local ]; then
-        echo '#!/bin/bash' | sudo tee /etc/rc.local
-        sudo chmod +x /etc/rc.local
+        echo '#!/bin/bash' | tee /etc/rc.local
+        chmod +x /etc/rc.local
     fi
     if ! grep mininet /etc/rc.local >& /dev/null; then
-        sudo sed -i -e "s/exit 0//" /etc/rc.local || true
+        sed -i -e "s/exit 0//" /etc/rc.local || true
         echo '
 # mininet: regenerate ssh keys if we deleted them
 if ! stat -t /etc/ssh/*key* >/dev/null 2>&1; then
     /usr/sbin/dpkg-reconfigure openssh-server
 fi
 exit 0
-' | sudo tee -a /etc/rc.local > /dev/null
-        sudo chmod +x /etc/rc.local
+' | tee -a /etc/rc.local > /dev/null
+        chmod +x /etc/rc.local
     fi
 
     # Clear optional dev script for SSH keychain load on boot
@@ -836,8 +836,8 @@ exit 0
     # Note: you can shrink the .vmdk in vmware using
     # vmware-vdiskmanager -k *.vmdk
     echo "Zeroing out disk blocks for efficient compaction..."
-    time sudo dd if=/dev/zero of=/tmp/zero bs=1M || true
-    sync ; sleep 1 ; sync ; sudo rm -f /tmp/zero
+    time dd if=/dev/zero of=/tmp/zero bs=1M || true
+    sync ; sleep 1 ; sync ; rm -f /tmp/zero
 
 }
 
