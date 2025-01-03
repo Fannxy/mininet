@@ -75,7 +75,7 @@ def sshd( network, cmd='/usr/sbin/sshd', opts='-D',
         
     with open(config_file, "w") as f:
         for host in network.hosts:
-            f.write(f"hoatname = {host.name} | ip = {host.IP()}\n")
+            f.write(f"hostname = {host.name} | ip = {host.IP()}\n")
     
     info( "\n*** Type 'exit' or control-D to shut down network\n" )
     CLI( network )

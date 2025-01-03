@@ -9,7 +9,7 @@ import argparse
 NETWORK_CONFIG = {
     "link": TCLink,
     "hosts": ['h1', 'h2', 'h3'],
-    "bw": [100, 100, 100],
+    "bw": [100, 1000, 1000],
     "delay": ['1us', '1us', '1us'],
     "ips": ['10.0.0.11', '10.0.0.12', '10.0.0.13']
 }
