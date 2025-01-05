@@ -9,7 +9,7 @@ import argparse
 NETWORK_CONFIG = {
     "link": TCLink,
     "hosts": ['h1', 'h2', 'h3'],
-    "bw": [100, 1000, 1000],
+    "bw": [100, 10000, 10000],
     "delay": ['1us', '1us', '1us'],
     "ips": ['10.0.0.11', '10.0.0.12', '10.0.0.13']
 }
@@ -44,7 +44,10 @@ def get_mininet(topo):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--ip', type=str, help='the ip address of the host pod')
+    parser.add_argument('--bw', type=int, nargs='+', help='bandwidthes of each host', default=NETWORK_CONFIG['bw'])
     args = parser.parse_args()
+    
+    NETWORK_CONFIG['bw'] = args.bw
     
     lg.setLogLevel('info')
     topo = RoundRoleNet()

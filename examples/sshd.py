@@ -78,10 +78,11 @@ def sshd( network, cmd='/usr/sbin/sshd', opts='-D',
             f.write(f"hostname = {host.name} | ip = {host.IP()}\n")
     
     info( "\n*** Type 'exit' or control-D to shut down network\n" )
-    CLI( network )
-    for host in network.hosts:
-        host.cmd( 'kill %' + cmd )
-    network.stop()
+    # info( "\n*** Type 'exit' or control-D to shut down network\n" )
+    # CLI( network )
+    # for host in network.hosts:
+    #     host.cmd( 'kill %' + cmd )
+    # network.stop()
 
 
 if __name__ == '__main__':
