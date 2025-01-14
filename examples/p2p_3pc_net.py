@@ -33,7 +33,7 @@ class RoundRoleNet( Topo ):
         
         # Add links, all the hosts need to link to the switch.
         for i in range(hosts_num):
-            self.addLink(self.hosts_list[i], self.switches_list[0], bw=self.network_config['bw'][i], delay=self.network_config['delay'][i], use_htb=True)
+            self.addLink(self.hosts_list[i], self.switches_list[0], bw=self.network_config['bw'][i], delay=self.network_config['delay'][i], use_hfsc=True)
         
         return        
     
