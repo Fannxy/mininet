@@ -242,7 +242,8 @@ function of {
     fi
     # was: git clone git://openflowswitch.org/openflow.git
     # Use our own fork on github for now:
-    git clone https://github.com/mininet/openflow
+    # git clone https://github.com/mininet/openflow
+    git clone git@github.com:mininet/openflow.git
     cd $BUILD_DIR/openflow
 
     # Patch controller to handle more than 16 switches
@@ -278,7 +279,8 @@ function of13 {
 
     # Install netbee
     if [ ! -d "netbee" ]; then
-        git clone https://github.com/netgroup-polito/netbee.git
+        # git clone https://github.com/netgroup-polito/netbee.git
+        git clone git@github.com:netgroup-polito/netbee.git
     fi
     cd netbee/src
     cmake .
@@ -627,7 +629,8 @@ function nox13 {
 function pox {
     echo "Installing POX into $BUILD_DIR/pox..."
     cd $BUILD_DIR
-    git clone https://github.com/noxrepo/pox.git
+    # git clone https://github.com/noxrepo/pox.git
+    git clone git@github.com:noxrepo/pox.git
 }
 
 # Install OFtest
@@ -640,7 +643,8 @@ function oftest {
 
     # Install oftest:
     cd $BUILD_DIR/
-    git clone https://github.com/floodlight/oftest
+    # git clone https://github.com/floodlight/oftest
+    git clone git@github.com:floodlight/oftest.git
 }
 
 # Install cbench
@@ -657,7 +661,8 @@ function cbench {
     cd $BUILD_DIR/
     # was:  git clone git://gitosis.stanford.edu/oflops.git
     # Use our own fork on github for now:
-    git clone https://github.com/mininet/oflops
+    # git clone https://github.com/mininet/oflops
+    git clone git@github.com:mininet/oflops.git
     cd oflops
     sh boot.sh || true # possible error in autoreconf, so run twice
     sh boot.sh
