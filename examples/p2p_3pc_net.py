@@ -10,8 +10,8 @@ NETWORK_CONFIG = {
     "link": TCLink,
     "hosts": ['h1', 'h2', 'h3'],
     "bw": [1000, 1000, 1000],
-    "delay": ['5ms', '5ms', '5ms'],
-    "ips": ['10.0.0.1', '10.0.0.2', '10.0.0.3']
+    "delay": ['1us', '1us', '1us'],
+    "ips": ['10.0.0.11', '10.0.0.12', '10.0.0.13']
 }
 
 class RoundRoleNet( Topo ):
