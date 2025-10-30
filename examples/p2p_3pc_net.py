@@ -33,10 +33,19 @@ class RoundRoleNet( Topo ):
         
         # Add links, all the hosts need to link to the switch.
         for i in range(hosts_num):
-            self.addLink(self.hosts_list[i], self.switches_list[0], bw=self.network_config['bw'][i], delay=self.network_config['delay'][i], use_hfsc=True)
+            # self.addLink(self.hosts_list[i], self.switches_list[0], bw=self.network_config['bw'][i], delay=self.network_config['delay'][i], use_hfsc=True)
+            self.addLink(
+                self.hosts_list[i], self.switches_list[0],
+                bw=self.network_config['bw'][i],             # 例如 100（单位 Mbit/s）
+                delay=self.network_config['delay'][i],       # 例如 '25ms'
+                use_htb=True,
+                burst='64k', 
+                max_queue_size=2000                          # 视 BDP 调整，示例值
+            )
         
         return        
-    
+
+
 def get_mininet(topo):
     return Mininet(topo, waitConnected=True, link=TCLink)
 
@@ -45,14 +54,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--ip', type=str, help='the ip address of the host pod')
     parser.add_argument('--bw', type=int, nargs='+', help='bandwidthes of each host', default=NETWORK_CONFIG['bw'])
+    parser.add_argument('--latency', type=str, nargs='+', help='latency', default=NETWORK_CONFIG['delay'])
     args = parser.parse_args()
     
     NETWORK_CONFIG['bw'] = args.bw
+    NETWORK_CONFIG['delay'] = args.latency
     
     lg.setLogLevel('info')
     topo = RoundRoleNet()
     net = get_mininet(topo)
     argvopts = '-D -o UseDNS=no -u0'
-    
+
     print("argvopts: ", argvopts)
     sshd(net, opts=argvopts, routes=['10.222.0.0/24'], ip=args.ip)
